@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../../data/models/producto.dart';
 import '../providers/producto_providers.dart';
+import 'producto_form_screen.dart';
 
 class ProductosListScreen extends ConsumerStatefulWidget {
   const ProductosListScreen({super.key});
@@ -23,6 +25,10 @@ class _ProductosListScreenState extends ConsumerState<ProductosListScreen> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Productos')),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _abrirFormulario(context, null),
+        child: const Icon(Icons.add),
+      ),
       body: pageAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Center(
@@ -43,6 +49,7 @@ class _ProductosListScreenState extends ConsumerState<ProductosListScreen> {
                 itemBuilder: (context, index) {
                   final producto = page.items[index];
                   return ListTile(
+                    onTap: () => _abrirFormulario(context, producto),
                     title: Text(producto.descripcion ?? producto.referencia ?? '—'),
                     subtitle: Text(
                       [
@@ -83,5 +90,16 @@ class _ProductosListScreenState extends ConsumerState<ProductosListScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _abrirFormulario(BuildContext context, Producto? producto) async {
+    final guardado = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(
+        builder: (_) => ProductoFormScreen(initial: producto),
+      ),
+    );
+    if (guardado == true) {
+      ref.invalidate(productosPageProvider(_offset));
+    }
   }
 }

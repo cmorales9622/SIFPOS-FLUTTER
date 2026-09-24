@@ -18,6 +18,13 @@ class _FakeProductoRepository implements ProductoRepository {
       count: 1,
     );
   }
+
+  @override
+  Future<Producto> crear(Producto producto) async => producto;
+
+  @override
+  Future<Producto> actualizar(String referencia, Producto producto) async =>
+      producto;
 }
 
 void main() {
